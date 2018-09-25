@@ -22,6 +22,9 @@ class CreateTasksTable extends Migration
             $table->text('description');
             $table->timestamps();
             $table->softDeletes();
+
+            $table->unsignedInteger('todo_id');
+            $table->foreign('todo_id')->references('id')->on('todos');
         });
     }
 
