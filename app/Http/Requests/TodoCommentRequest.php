@@ -8,12 +8,11 @@ use Illuminate\Foundation\Http\FormRequest;
  * Class TodoRequest
  * @package App\Http\Requests
  *
- * @property string title
- * @property string description
- * @property string target_date
  * @property int user_id
+ * @property int todo_id
+ * @property string comment
  */
-class TodoRequest extends FormRequest
+class TodoCommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -32,10 +31,9 @@ class TodoRequest extends FormRequest
     private function storeRules()
     {
         return [
-            'title' => 'required|string|min:3|max:50',
-            'description' => 'required|string|min:3',
-            'target_date' => 'required|date',
             'user_id' => 'required|integer',
+            'todo_id' => 'required|integer',
+            'comment' => 'required|string|min:3',
         ];
     }
 
@@ -46,10 +44,9 @@ class TodoRequest extends FormRequest
     private function updateRules()
     {
         return [
-            'title' => 'string|min:3|max:50',
-            'description' => 'string|min:3',
-            'target_date' => 'date',
             'user_id' => 'integer',
+            'todo_id' => 'integer',
+            'comment' => 'string|min:3',
         ];
     }
 

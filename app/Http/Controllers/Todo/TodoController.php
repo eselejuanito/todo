@@ -92,12 +92,16 @@ class TodoController extends ApiController
             $todo->user_id = $request->user_id;
         }
 
-        if ($request->has('name')) {
-            $todo->name = $request->name;
+        if ($request->has('title')) {
+            $todo->title = $request->title;
         }
 
         if ($request->has('description')) {
             $todo->description = $request->description;
+        }
+
+        if ($request->has('target_date')) {
+            $todo->target_date = $request->target_date;
         }
 
         if (!$todo->isDirty()) {
@@ -105,7 +109,6 @@ class TodoController extends ApiController
         }
 
         $todo->save();
-
         return $this->getOne($todo);
     }
 }

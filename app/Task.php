@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Transformers\TaskTransformer;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,7 +13,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Task extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, SoftCascadeTrait;
+
+    protected $softCascade = ['todoComments','tasksAssigned'];
 
     // Kind of status for a task
     const STATUS = ['pending', 'completed'];
@@ -34,5 +37,21 @@ class Task extends Model
     public function todo()
     {
         return $this->belongsTo('App\Todo');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function taskComments()
+    {
+        return $this->hasMany('App\TaskComment');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function tasksAssigned()
+    {
+        return $this->hasMany('App\TaskAssigned');
     }
 }

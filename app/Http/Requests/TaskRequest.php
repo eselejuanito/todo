@@ -11,6 +11,7 @@ use Illuminate\Foundation\Http\FormRequest;
  *
  * @property string name
  * @property string description
+ * @property string status
  * @property int todo_id
  */
 class TaskRequest extends FormRequest
@@ -34,7 +35,7 @@ class TaskRequest extends FormRequest
         return [
             'title' => 'required|string|min:3|max:50',
             'description' => 'required|string|min:3',
-            'status' => 'required|in_array:' . Task::STATUS,
+            'status' => 'in:' . implode(',', Task::STATUS),
             'todo_id' => 'required|integer',
         ];
     }
@@ -48,7 +49,7 @@ class TaskRequest extends FormRequest
         return [
             'title' => 'string|min:3|max:50',
             'description' => 'string|min:3',
-            'status' => 'in_array:' . Task::STATUS,
+            'status' => 'in:' . implode(',', Task::STATUS),
             'todo_id' => 'integer',
         ];
     }

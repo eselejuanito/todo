@@ -39,5 +39,8 @@ class DatabaseSeeder extends Seeder
         $this->call(UsersTableSeeder::class);
         $this->call(TodosTableSeeder::class);
         $this->call(TasksTableSeeder::class);
+        $this->call(TodoCommentsTableSeeder::class);
+        $this->call(TaskCommentsTableSeeder::class);
+        $this->call(TaskAssignTableSeeder::class);
     }
 }

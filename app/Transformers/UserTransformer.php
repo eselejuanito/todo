@@ -12,7 +12,7 @@ use League\Fractal\TransformerAbstract;
 class UserTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'todos', 'tasks'
+        'todos', 'tasks', 'todoComments', 'taskComments', 'tasksAssigned'
     ];
 
     /**
@@ -100,5 +100,44 @@ class UserTransformer extends TransformerAbstract
     {
         $tasks = $user->tasks();
         return $this->collection($tasks, new TaskTransformer);
+    }
+
+    /**
+     * Embed Tasks
+     *
+     * @param User $user
+     *
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTodoComments(User $user)
+    {
+        $todo_comments = $user->todoComments()->get();
+        return $this->collection($todo_comments, new TodoCommentTransformer);
+    }
+
+    /**
+     * Embed Tasks
+     *
+     * @param User $user
+     *
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTaskComments(User $user)
+    {
+        $task_comments = $user->taskComments();
+        return $this->collection($task_comments, new TaskCommentTransformer);
+    }
+
+    /**
+     * Embed Tasks Assigned
+     *
+     * @param User $user
+     *
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTasksAssigned(User $user)
+    {
+        $tasks_assigned = $user->tasksAssigned()->get();
+        return $this->collection($tasks_assigned, new TaskAssignTransformer);
     }
 }

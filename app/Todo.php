@@ -15,7 +15,7 @@ class Todo extends Model
 {
     use SoftDeletes, SoftCascadeTrait;
 
-    protected $softCascade = ['tasks'];
+    protected $softCascade = ['tasks','todoComments'];
     /**
      * The attributes that are mass assignable.
      *
@@ -38,6 +38,14 @@ class Todo extends Model
     public function tasks()
     {
         return $this->hasMany('App\Task');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function todoComments()
+    {
+        return $this->hasMany('App\TodoComment');
     }
 
     /**

@@ -92,12 +92,16 @@ class TaskController extends ApiController
             $task->todo_id = $request->todo_id;
         }
 
-        if ($request->has('name')) {
-            $task->name = $request->name;
+        if ($request->has('title')) {
+            $task->title = $request->title;
         }
 
         if ($request->has('description')) {
             $task->description = $request->description;
+        }
+
+        if ($request->has('status')) {
+            $task->status = $request->status;
         }
 
         if (!$task->isDirty()) {

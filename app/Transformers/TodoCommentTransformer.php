@@ -2,14 +2,14 @@
 
 namespace App\Transformers;
 
-use App\Todo;
+use App\TodoComment;
 use League\Fractal\TransformerAbstract;
 
 /**
- * Class TodoTransformer
+ * Class TodoCommentTransformer
  * @package App\Transformers
  */
-class TodoTransformer extends TransformerAbstract
+class TodoCommentTransformer extends TransformerAbstract
 {
     /**
      * List of resources possible to embed via this processor
@@ -17,29 +17,30 @@ class TodoTransformer extends TransformerAbstract
      * @var array
      */
     protected $availableIncludes = [
-        'user','tasks'
+        'user','todo'
     ];
 
     /**
      * To Fractal transformer.
      *
-     * @param Todo $todo
+     * @param TodoComment $todo_comment
      *
      * @return array
      */
-    public function transform(Todo $todo)
+    public function transform(TodoComment $todo_comment)
     {
         return [
-            'identifier' => (int)$todo->id,
-            'title' => (string)$todo->title,
-            'description' => (string)$todo->description,
-            'targetDate' => (string)$todo->target_date,
-            'creationDate' => (string)$todo->created_at,
+            'identifier' => (int)$todo_comment->id,
+            'userId' => (int)$todo_comment->user_id,
+            'userName' => $todo_comment->user()->first()->name,
+            'todoId' => (int)$todo_comment->todo_id,
+            'todoTitle' => $todo_comment->todo()->first()->title,
+            'comment' => (string)$todo_comment->comment,
+            'creationDate' => (string)$todo_comment->created_at,
             //HATEOAS
             'links' => [
                 'rel' => 'self',
-                'href' => route('todos.show', $todo->id),
-                'tasks' => $todo->tasks_ids
+                'href' => route('comments.todos.show', $todo_comment->id),
             ],
         ];
     }
@@ -53,12 +54,10 @@ class TodoTransformer extends TransformerAbstract
     {
         $attributes = [
             'identifier' => 'id',
-            'title' => 'title',
-            'description' => 'description',
-            'targetDate' => 'target_date',
             'userId' => 'user_id',
+            'todoId' => 'todo_id',
+            'comment' => 'comment',
             'creationDate' => 'created_at',
-            'lastChange' => 'updated_at',
         ];
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
@@ -74,12 +73,10 @@ class TodoTransformer extends TransformerAbstract
     {
         $attributes = [
             'id' => 'identifier',
-            'title' => 'title',
-            'description' => 'description',
-            'target_date' => 'targetDate',
             'user_id' => 'userId',
+            'todo_id' => 'todoId',
+            'comment' => 'comment',
             'created_at' => 'creationDate',
-            'updated_at' => 'lastChange',
         ];
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
@@ -88,26 +85,26 @@ class TodoTransformer extends TransformerAbstract
     /**
      * Embed User
      *
-     * @param Todo $todo
+     * @param TodoComment $todo_comment
      *
      * @return \League\Fractal\Resource\Item
      */
-    public function includeUser(Todo $todo)
+    public function includeUser(TodoComment $todo_comment)
     {
-        $user = $todo->user;
+        $user = $todo_comment->user;
         return $this->item($user, new UserTransformer);
     }
 
     /**
-     * Embed Tasks
+     * Embed Todo
      *
-     * @param Todo $todo
+     * @param TodoComment $todo_comment
      *
-     * @return \League\Fractal\Resource\Collection
+     * @return \League\Fractal\Resource\Item
      */
-    public function includeTasks(Todo $todo)
+    public function includeTodo(TodoComment $todo_comment)
     {
-        $tasks = $todo->tasks;
-        return $this->collection($tasks, new TaskTransformer);
+        $todo = $todo_comment->todo;
+        return $this->item($todo, new TodoTransformer);
     }
 }

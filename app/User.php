@@ -16,7 +16,7 @@ class User extends Authenticatable
 {
     use Notifiable, SoftDeletes, SoftCascadeTrait;
 
-    protected $softCascade = ['todos'];
+    protected $softCascade = ['todos','todoComments','tasksAssigned'];
 
     /**
      * The attributes that are mass assignable.
@@ -53,6 +53,14 @@ class User extends Authenticatable
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
+    public function todoComments()
+    {
+        return $this->hasMany('App\TodoComment');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
     public function tasksAssigned()
     {
         return $this->hasMany('App\TaskAssigned');
@@ -82,6 +90,16 @@ class User extends Authenticatable
     public function tasks()
     {
         return Task::whereHas('todo', function ($query) {
+            $query->where('user_id', $this->id);
+        })->get();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function taskComments()
+    {
+        return TaskComment::whereHas('user', function ($query) {
             $query->where('user_id', $this->id);
         })->get();
     }
