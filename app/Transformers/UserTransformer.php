@@ -12,7 +12,7 @@ use League\Fractal\TransformerAbstract;
 class UserTransformer extends TransformerAbstract
 {
     protected $availableIncludes = [
-        'todos',
+        'todos', 'tasks'
     ];
 
     /**
@@ -87,5 +87,18 @@ class UserTransformer extends TransformerAbstract
     {
         $todos = $user->todos;
         return $this->collection($todos, new TodoTransformer);
+    }
+
+    /**
+     * Embed Tasks
+     *
+     * @param User $user
+     *
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTasks(User $user)
+    {
+        $tasks = $user->tasks();
+        return $this->collection($tasks, new TaskTransformer);
     }
 }

@@ -5,13 +5,14 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * Class UserRequest
+ * Class TodoRequest
  * @package App\Http\Requests
  *
  * @property string name
- * @property string email
+ * @property string description
+ * @property int user_id
  */
-class UserRequest extends FormRequest
+class TodoRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -30,8 +31,10 @@ class UserRequest extends FormRequest
     private function storeRules()
     {
         return [
-            'name' => 'required|min:5',
-            'email' => 'required|email|unique:users',
+            'title' => 'required|string|min:3|max:50',
+            'description' => 'required|string|min:3',
+            'target_date' => 'required|date',
+            'user_id' => 'required|integer',
         ];
     }
 
@@ -42,8 +45,10 @@ class UserRequest extends FormRequest
     private function updateRules()
     {
         return [
-            'name' => 'min:5',
-            'email' => 'email|unique:users,email,' . $this->user->id,
+            'title' => 'string|min:3|max:50',
+            'description' => 'string|min:3',
+            'target_date' => 'date',
+            'user_id' => 'integer',
         ];
     }
 

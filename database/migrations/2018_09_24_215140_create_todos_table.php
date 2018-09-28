@@ -18,13 +18,14 @@ class CreateTodosTable extends Migration
     {
         Schema::create('todos', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 50);
+            $table->string('title', 50);
             $table->text('description');
+            $table->dateTime('target_date');
             $table->timestamps();
             $table->softDeletes();
 
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

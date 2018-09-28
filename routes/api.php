@@ -22,5 +22,11 @@ Route::group(['prefix' => 'v1'], function () {
     /**
      * Todos
      */
-    Route::apiResource('users.todos', 'Todo\TodoController');
+    Route::apiResource('todos', 'Todo\TodoController');
+    // Route::get('users/{user}todos', 'Todo\TodoController');
+
+    /**
+     * Tasks
+     */
+    Route::apiResource('tasks', 'Task\TaskController');
 });

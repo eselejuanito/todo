@@ -4,6 +4,8 @@ namespace App;
 
 use App\Transformers\UserTransformer;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 /**
@@ -12,7 +14,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  */
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, SoftDeletes, SoftCascadeTrait;
+
+    protected $softCascade = ['todos'];
 
     /**
      * The attributes that are mass assignable.
@@ -70,5 +74,15 @@ class User extends Authenticatable
     public function getTodosIdsAttribute()
     {
         return $this->todos->pluck('id');
+    }
+
+    /**
+     * @return mixed
+     */
+    public function tasks()
+    {
+        return Task::whereHas('todo', function ($query) {
+            $query->where('user_id', $this->id);
+        })->get();
     }
 }

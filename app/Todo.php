@@ -5,6 +5,7 @@ namespace App;
 use App\Transformers\TodoTransformer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Askedio\SoftCascade\Traits\SoftCascadeTrait;
 
 /**
  * Class Todo
@@ -12,21 +13,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Todo extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, SoftCascadeTrait;
 
+    protected $softCascade = ['tasks'];
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
     protected $fillable = [
-        'name', 'description',
+        'title', 'description', 'target_date', 'user_id'
     ];
 
     protected $appends = ['tasks_ids'];
 
     public $transformer = TodoTransformer::class;
     public $timestamps = true;
+
+    /**-----------------------RELATIONSHIPS-----------------------**/
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -43,6 +47,8 @@ class Todo extends Model
     {
         return $this->belongsTo('App\User');
     }
+
+    /**-----------------------QUERIES-----------------------**/
 
     /**
      * @return mixed

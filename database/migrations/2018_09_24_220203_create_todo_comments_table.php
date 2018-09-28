@@ -18,13 +18,14 @@ class CreateTodoCommentsTable extends Migration
     {
         Schema::create('todo_comments', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->unsignedInteger('todo_id');
-            $table->foreign('todo_id')->references('id')->on('todos');
+            $table->foreign('todo_id')->references('id')->on('todos')->onDelete('cascade');
 
             $table->text('comment');
 
+            $table->timestamps();
             $table->softDeletes();
         });
     }

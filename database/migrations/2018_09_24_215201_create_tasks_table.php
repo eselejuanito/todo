@@ -18,13 +18,14 @@ class CreateTasksTable extends Migration
     {
         Schema::create('tasks', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 50);
+            $table->string('title', 50);
             $table->text('description');
+            $table->enum('status', ['pending', 'completed']);
             $table->timestamps();
             $table->softDeletes();
 
             $table->unsignedInteger('todo_id');
-            $table->foreign('todo_id')->references('id')->on('todos');
+            $table->foreign('todo_id')->references('id')->on('todos')->onDelete('cascade');
         });
     }
 

@@ -6,7 +6,7 @@ use App\Todo;
 use League\Fractal\TransformerAbstract;
 
 /**
- * Class UserTransformer
+ * Class TodoTransformer
  * @package App\Transformers
  */
 class TodoTransformer extends TransformerAbstract
@@ -16,8 +16,8 @@ class TodoTransformer extends TransformerAbstract
      *
      * @var array
      */
-    protected $availableEmbeds = [
-        'user',
+    protected $availableIncludes = [
+        'user','tasks'
     ];
 
     /**
@@ -31,27 +31,17 @@ class TodoTransformer extends TransformerAbstract
     {
         return [
             'identifier' => (int)$todo->id,
-            'name' => (string)$todo->name,
+            'title' => (string)$todo->title,
             'description' => (string)$todo->description,
+            'targetDate' => (string)$todo->target_date,
             'creationDate' => (string)$todo->created_at,
             //HATEOAS
             'links' => [
                 'rel' => 'self',
-                'href' => route('users.todos.show', ['user' => $todo->user, 'todo' => $todo]),
+                'href' => route('todos.show', $todo->id),
                 'tasks' => $todo->tasks_ids
             ],
         ];
-    }
-
-    /**
-     * Embed User
-     *
-     * @return \League\Fractal\Resource\Item
-     */
-    public function embedUser(Todo $todo)
-    {
-        $user = $todo->user;
-        return $this->item($user, new UserTransformer);
     }
 
     /**
@@ -63,9 +53,9 @@ class TodoTransformer extends TransformerAbstract
     {
         $attributes = [
             'identifier' => 'id',
-            'name' => 'name',
-            'email' => 'email',
-            'password' => 'password',
+            'title' => 'title',
+            'description' => 'description',
+            'userId' => 'user_id',
             'creationDate' => 'created_at',
             'lastChange' => 'updated_at',
         ];
@@ -83,13 +73,39 @@ class TodoTransformer extends TransformerAbstract
     {
         $attributes = [
             'id' => 'identifier',
-            'name' => 'name',
-            'email' => 'email',
-            'password' => 'password',
+            'title' => 'title',
+            'description' => 'description',
+            'user_id' => 'userId',
             'created_at' => 'creationDate',
             'updated_at' => 'lastChange',
         ];
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
+    }
+
+    /**
+     * Embed User
+     *
+     * @param Todo $todo
+     *
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeUser(Todo $todo)
+    {
+        $user = $todo->user;
+        return $this->item($user, new UserTransformer);
+    }
+
+    /**
+     * Embed Tasks
+     *
+     * @param Todo $todo
+     *
+     * @return \League\Fractal\Resource\Collection
+     */
+    public function includeTasks(Todo $todo)
+    {
+        $tasks = $todo->tasks;
+        return $this->collection($tasks, new TaskTransformer);
     }
 }

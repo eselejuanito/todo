@@ -6,9 +6,10 @@ use App\Http\Requests\TodoRequest;
 use App\Transformers\TodoTransformer;
 use App\Todo;
 use App\Http\Controllers\ApiController;
+use App\User;
 
 /**
- * Class UserController
+ * Class TodoController
  * @package App\Http\Controllers\Todo
  */
 class TodoController extends ApiController
@@ -25,66 +26,86 @@ class TodoController extends ApiController
      */
     public function index()
     {
-        $users = User::all();
-        return $this->getAll($users);
+        $todos = Todo::all();
+        return $this->getAll($todos);
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\UserRequest
+     * @param  \App\Http\Requests\TodoRequest
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function store(UserRequest $request)
+    public function store(TodoRequest $request)
     {
         $data = $request->all();
-        $data['password'] = bcrypt($request->password);
-        $user = User::create($data);
-        return $this->getOne($user, 201);
+        $user = User::find($data['user_id']);
+        if ($user == null) {
+            return $this->errorResponse("User doesn't exist", 404);
+        }
+
+        $todo = Todo::create($data);
+        return $this->getOne($todo, 201);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  User  $user
+     * @param Todo $todo
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(User $user)
+    public function show(Todo $todo)
     {
-        return $this->getOne($user);
+        return $this->getOne($todo);
     }
 
 
     /**
      * Remove the specified resource from storage.
      *
-     * @throws \Exception
-     * @param  User  $user
+     * @param  Todo $todo
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Exception
      */
-    public function destroy(User $user)
+    public function destroy(Todo $todo)
     {
-        $user->delete();
-        return $this->getOne($user);
+        $todo->delete();
+        return $this->getOne($todo);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\UserRequest  $request
-     * @param  User  $user
+     * @param  \App\Http\Requests\TodoRequest  $request
+     * @param  Todo $todo
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(UserRequest $request, User $user)
+    public function update(TodoRequest $request, Todo $todo)
     {
-        $data = $request->all();
-        $data['password'] = bcrypt($request->password);
+        if ($request->has('user_id')) {
+            $user = User::find($request->user_id);
+            if ($user == null) {
+                return $this->errorResponse("User doesn't exist", 404);
+            }
 
-        if (!$user->isDirty()) {
+            $todo->user_id = $request->user_id;
+        }
+
+        if ($request->has('name')) {
+            $todo->name = $request->name;
+        }
+
+        if ($request->has('description')) {
+            $todo->description = $request->description;
+        }
+
+        if (!$todo->isDirty()) {
             return $this->errorResponse('You need to specify a different value to update', 422);
         }
 
-        $user->fill($data);
-        return $this->getOne($user);
+        $todo->save();
+
+        return $this->getOne($todo);
     }
 }

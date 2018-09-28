@@ -18,13 +18,14 @@ class CreateTaskCommentsTable extends Migration
     {
         Schema::create('task_comments', function (Blueprint $table) {
             $table->unsignedInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
 
             $table->unsignedInteger('task_id');
-            $table->foreign('task_id')->references('id')->on('tasks');
+            $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');
 
             $table->text('comment');
 
+            $table->timestamps();
             $table->softDeletes();
         });
     }

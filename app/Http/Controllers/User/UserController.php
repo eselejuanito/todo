@@ -38,7 +38,7 @@ class UserController extends ApiController
     public function store(UserRequest $request)
     {
         $data = $request->all();
-        $data['password'] = bcrypt($request->password);
+        $data['password'] = bcrypt('secret');
         $user = User::create($data);
         return $this->getOne($user, 201);
     }
@@ -77,14 +77,19 @@ class UserController extends ApiController
      */
     public function update(UserRequest $request, User $user)
     {
-        $data = $request->all();
-        $data['password'] = bcrypt($request->password);
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
 
         if (!$user->isDirty()) {
             return $this->errorResponse('You need to specify a different value to update', 422);
         }
+        $user->save();
 
-        $user->fill($data);
         return $this->getOne($user);
     }
 }

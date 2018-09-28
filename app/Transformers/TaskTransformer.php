@@ -11,6 +11,9 @@ use League\Fractal\TransformerAbstract;
  */
 class TaskTransformer extends TransformerAbstract
 {
+    protected $availableIncludes = [
+        'todo'
+    ];
 
     /**
      * To Fractal transformer.
@@ -23,12 +26,14 @@ class TaskTransformer extends TransformerAbstract
     {
         return [
             'identifier' => (int)$task->id,
-            'name' => (string)$task->name,
+            'title' => (string)$task->title,
             'description' => (string)$task->description,
+            'status' => (string)$task->status,
             'creationDate' => (string)$task->created_at,
             //HATEOAS
             'links' => [
                 'rel' => 'self',
+                'href' => route('tasks.show', $task->id),
             ],
         ];
     }
@@ -42,9 +47,12 @@ class TaskTransformer extends TransformerAbstract
     {
         $attributes = [
             'identifier' => 'id',
-            'name' => 'name',
+            'title' => 'title',
             'description' => 'description',
+            'status' => 'status',
+            'todoId' => 'todo_id',
             'creationDate' => 'created_at',
+            'lastChange' => 'updated_at',
         ];
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
@@ -60,11 +68,27 @@ class TaskTransformer extends TransformerAbstract
     {
         $attributes = [
             'id' => 'identifier',
-            'name' => 'name',
+            'title' => 'title',
             'description' => 'description',
+            'status' => 'status',
+            'todo_id' => 'todoId',
             'created_at' => 'creationDate',
+            'updated_at' => 'lastChange',
         ];
 
         return isset($attributes[$index]) ? $attributes[$index] : null;
+    }
+
+    /**
+     * Embed Todo
+     *
+     * @param Task $task
+     *
+     * @return \League\Fractal\Resource\Item
+     */
+    public function includeTodo(Task $task)
+    {
+        $todo = $task->todo;
+        return $this->item($todo, new TodoTransformer);
     }
 }
